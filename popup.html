@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div id="loadingOverlay" class="loader">
+    <div class="spinner"></div>
+    <p>Loading...</p>
+  </div>
+
+  <div class="header">
+    <div class="header-top">
+      <h2 data-i18n="live_sports">Live Sports</h2>
+      <select id="langSwitcher">
+          <option value="en">🇬🇧 EN</option>
+          <option value="zh">🇨🇳 中文</option>
+          <option value="ar">🇸🇦 العربية</option>
+          <option value="hi">🇮🇳 हिन्दी</option>
+          <option value="bn">🇧🇩 বাংলা</option>
+          <option value="id">🇮🇩 ID</option>
+          <option value="it">🇮🇹 IT</option>
+          <option value="ja">🇯🇵 JA</option>
+          <option value="ko">🇰🇷 KO</option>
+          <option value="ru">🇷🇺 RU</option>
+          <option value="fr">🇫🇷 FR</option>
+          <option value="es">🇪🇸 ES</option>
+          <option value="pt">🇧🇷 PT</option>
+          <option value="de">🇩🇪 DE</option>
+          <option value="tr">🇹🇷 TR</option>
+          <option value="vi">🇻🇳 VI</option>
+        </select>
+      <button id="themeBtn">🌙</button>
+      
+    </div>
+    
+    <div class="tabs" id="categoryTabs">
+      <button class="tab-btn active" data-sport="football" data-i18n="football">Football</button>
+      <button class="tab-btn" data-sport="basketball" data-i18n="basketball">Basketball</button>
+      <button class="tab-btn" data-sport="baseball" data-i18n="baseball">Baseball</button>
+      <button class="tab-btn" data-sport="hockey" data-i18n="hockey">Hockey</button>
+      <button class="tab-btn" data-sport="american_football" data-i18n="american_football">Am. Football</button>
+      <!-- <button class="tab-btn" data-sport="more_sports" data-i18n="more">More</button> -->
+    </div>
+
+    <input type="text" id="search" data-i18n="search_placeholder" placeholder="Search team, league, tournament or competition">
+    <div id="eventCount" class="event-count">Loading...</div>
+    <div class="adblock-notice" data-i18n="adblock_notice" data-i18n-html>
+    For the best viewing experience, using an
+    <a href="https://adguard.com/en/adguard-browser-extension/overview.html" target="_blank">
+      ad-blocker
+    </a>
+    is recommended.
+  </div>
+  </div>
+
+
+  <div id="channelList"></div>
+
+  <script src="translation.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

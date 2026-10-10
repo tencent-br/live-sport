@@ -1,0 +1,27 @@
+{
+  "manifest_version": 3,
+  "name": "__MSG_extension_name__",
+  "version": "1.7",
+  "description": "__MSG_extension_description__",
+  "default_locale": "en",
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_title": "__MSG_extension_name__"
+  },
+  "side_panel": {
+    "default_path": "popup.html"
+  },
+  "icons": {
+    "128": "favicon.png"
+  },
+  "permissions": [
+    "sidePanel",
+    "alarms",
+    "storage"
+  ],
+  "host_permissions": [
+    "https://*.workers.dev/*"
+  ]
+}
