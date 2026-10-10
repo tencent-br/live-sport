@@ -457,7 +457,7 @@ async function performBatchFetch(isInitial = false) {
     return;
   }
 
-  const batchSize = 25;
+  const batchSize = 5;
   let allData = [];
 
   try {
