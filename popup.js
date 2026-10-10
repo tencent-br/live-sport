@@ -289,7 +289,7 @@ function getStatus(apiStatus, timestamp) {
 const SPORT_CONFIG = {
   "football": {
     cache: "https://football-automator2.sportyreplays.workers.dev/",
-    dataStorage: "https://football-main2.sportyreplays.workers.dev/"
+    dataStorage: "https://football-main20.sportyreplays.workers.dev/"
   },
   "basketball": {
     cache: "https://basketball-automator.sportyreplays.workers.dev/",
@@ -457,7 +457,7 @@ async function performBatchFetch(isInitial = false) {
     return;
   }
 
-  const batchSize = 5;
+  const batchSize = 10;
   let allData = [];
 
   try {
