@@ -102,7 +102,7 @@ async function performBackgroundBatchFetch() {
   const standardChannels = channels.filter(c => c.apiURL || c.eventId);
   if (standardChannels.length === 0) return;
 
-  const batchSize = 25;
+  const batchSize = 5;
   let allData = [];
 
   for (let i = 0; i < standardChannels.length; i += batchSize) {
