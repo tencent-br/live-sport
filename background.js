@@ -46,7 +46,7 @@ chrome.sidePanel
   .catch((error) => console.error("Error setting side panel behavior:", error));
 
 chrome.runtime.onInstalled.addListener(() => {
-  chrome.alarms.create("fetchMatchData", { periodInMinutes: 0.25 }); // 15 seconds
+  chrome.alarms.create("fetchMatchData", { periodInMinutes: 0.5 }); // 30 seconds
 });
 
 chrome.alarms.onAlarm.addListener(async (alarm) => {
