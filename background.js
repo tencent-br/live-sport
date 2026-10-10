@@ -3,7 +3,7 @@
 const SPORT_CONFIG = {
   "football": {
     cache: "https://football-automator2.sportyreplays.workers.dev/",
-    dataStorage: "https://football-main2.sportyreplays.workers.dev/"
+    dataStorage: "https://football-main20.sportyreplays.workers.dev/"
   },
   "basketball": {
     cache: "https://basketball-automator.sportyreplays.workers.dev/",
@@ -36,6 +36,281 @@ function getFormattedDate(offsetDays = 0) {
     d.setUTCDate(d.getUTCDate() + offsetDays);
   }
   return `${d.getUTCFullYear()}-${d.getUTCMonth() + 1}-${d.getUTCDate()}`;
+}
+
+// ────────────────────────────────────────────────
+// UTILS (needed for live-match filtering)
+// ────────────────────────────────────────────────
+const getSafeDate = (utcString) => utcString ? new Date(utcString.endsWith('Z') ? utcString : utcString + 'Z') : null;
+
+function getCorrectedNow(timeDrift = 0) {
+  return new Date(Date.now() + timeDrift);
+}
+
+function getStatus(apiStatus, timestamp, currentSport = "football", timeDrift = 0) {
+  if (!apiStatus && !timestamp)
+    return { rank: 10, label: 'syncing', class: 'badge-syncing' };
+
+  const now = getCorrectedNow(timeDrift);
+  const startTime = getSafeDate(timestamp);
+  const diffMin = (now - startTime) / 60000;
+
+  // Football
+  if (startTime && currentSport == "football") {
+
+    if (diffMin > 190 && !["Match Postponed", "PST", "POST", "STATUS_POSTPONED", "Match Suspended", "SUSP", "S", "STATUS_SUSPENDED", "Match Cancelled", "CANC", "STATUS_CANCELED", "STATUS_DELAYED", "ABD", "INT", "INTR", "AWD", "AW", "WO", "STATUS_FORFEIT"].includes(apiStatus))
+      return { rank: 6, label: 'finished', class: 'badge-finished' };
+
+    if (diffMin > 125 && !["STATUS_EXTRA_TIME", "ET", "BT", "Match Postponed", "PST", "POST", "STATUS_POSTPONED", "Match Suspended", "SUSP", "S", "STATUS_SUSPENDED", "Match Cancelled", "CANC", "STATUS_CANCELED", "STATUS_DELAYED", "P", "PT", "STATUS_PENALTY_SHOOTOUT", "STATUS_SHOOTOUT", "ABD", "INT", "INTR", "AWD", "AW", "WO", "STATUS_FORFEIT"].includes(apiStatus))
+      return { rank: 6, label: 'finished', class: 'badge-finished' };
+
+    if (diffMin > 125 && diffMin < 135 &&
+        (apiStatus === "P" || apiStatus === "PT" || apiStatus === "PEN" ||
+         apiStatus === "STATUS_PENALTY_SHOOTOUT" || apiStatus === "STATUS_SHOOTOUT"))
+      return { rank: 6, label: 'finished', class: 'badge-finished' };
+
+    if (apiStatus === "STATUS_EXTRA_TIME" || apiStatus === "ET")
+      return { rank: 4, label: 'extra_time', class: 'badge-live' };
+
+    if (apiStatus === "STATUS_PENALTY_SHOOTOUT" ||
+        apiStatus === "STATUS_SHOOTOUT" ||
+        apiStatus === "P" ||
+        apiStatus === "PT")
+      return { rank: 5, label: 'penalties', class: 'badge-live' };
+
+    if (apiStatus === "STATUS_HALFTIME")
+      return { rank: 4, label: 'halftime', class: 'badge-live' };
+
+    if (apiStatus === "STATUS_IN_PROGRESS")
+      return { rank: 1, label: 'live', class: 'badge-live' };
+
+    if (apiStatus === "Match Finished" ||
+        apiStatus === "F" ||
+        apiStatus === "FT" ||
+        apiStatus === "STATUS_FULL_TIME" ||
+        apiStatus === "STATUS_FINAL")
+      return { rank: 6, label: 'finished', class: 'badge-finished' };
+
+    if (apiStatus === "AET" || apiStatus === "STATUS_FINAL_AET")
+      return { rank: 6, label: 'finished_aet', class: 'badge-finished' };
+
+    if (apiStatus === "PEN" || apiStatus === "STATUS_FINAL_PEN")
+      return { rank: 6, label: 'finished', class: 'badge-finished' };
+
+    if (apiStatus === "Match Postponed" ||
+        apiStatus === "PST" ||
+        apiStatus === "POST" ||
+        apiStatus === "STATUS_POSTPONED")
+      return { rank: 3, label: 'postponed', class: 'badge-postponed' };
+
+    if (apiStatus === "Match Suspended" ||
+        apiStatus === "SUSP" ||
+        apiStatus === "S" ||
+        apiStatus === "STATUS_SUSPENDED")
+      return { rank: 3, label: 'suspended', class: 'badge-postponed' };
+
+    if (apiStatus === "STATUS_DELAYED")
+      return { rank: 3, label: 'delayed', class: 'badge-postponed' };
+
+    if (apiStatus === "Match Cancelled" ||
+        apiStatus === "CANC" ||
+        apiStatus === "STATUS_CANCELED")
+      return { rank: 3, label: 'cancelled', class: 'badge-postponed' };
+
+    if (apiStatus === "INT" || apiStatus === "INTR")
+      return { rank: 3, label: 'interrupted', class: 'badge-postponed' };
+
+    if (apiStatus === "Match Abandoned" ||
+        apiStatus === "ABD" ||
+        apiStatus === "STATUS_ABANDONED")
+      return { rank: 3, label: 'abandoned', class: 'badge-postponed' };
+
+    if (apiStatus === "AWD" ||
+        apiStatus === "AW" ||
+        apiStatus === "STATUS_FORFEIT")
+      return { rank: 3, label: 'awarded', class: 'badge-postponed' };
+
+    if (apiStatus === "WO")
+      return { rank: 3, label: 'walkover', class: 'badge-postponed' };
+
+    if (diffMin > 0 && ![
+      "STATUS_DELAYED",
+      "Match Postponed",
+      "PST",
+      "POST",
+      "STATUS_POSTPONED",
+      "Match Suspended",
+      "SUSP",
+      "S",
+      "STATUS_SUSPENDED",
+      "Match Cancelled",
+      "CANC",
+      "STATUS_CANCELED",
+      "ET",
+      "P",
+      "PEN",
+      "Match Finished",
+      "F",
+      "FT",
+      "STATUS_FULL_TIME",
+      "STATUS_FINAL",
+      "STATUS_FINAL_AET",
+      "STATUS_FINAL_PEN",
+      "ABD",
+      "INT",
+      "INTR",
+      "WO",
+      "AWD",
+      "AW",
+      "STATUS_FORFEIT"
+    ].includes(apiStatus))
+      return { rank: 1, label: 'live', class: 'badge-live' };
+  }
+
+  // Other Sports
+  if (startTime &&
+      ["basketball", "hockey", "baseball", "american_football", "more_sports"].includes(currentSport)) {
+
+    if (diffMin > 180 && ![
+      "STATUS_DELAYED",
+      "STATUS_EXTRA_TIME",
+      "ET",
+      "BT",
+      "Match Postponed",
+      "PST",
+      "POST",
+      "STATUS_POSTPONED",
+      "Match Cancelled",
+      "CANC",
+      "STATUS_CANCELED",
+      "Match Suspended",
+      "STATUS_SUSPENDED",
+      "SUSP",
+      "S",
+      "ABD",
+      "INT",
+      "INTR",
+      "AWD",
+      "AW",
+      "WO",
+      "STATUS_FORFEIT"
+    ].includes(apiStatus))
+      return { rank: 4, label: 'finished', class: 'badge-finished' };
+
+    if (apiStatus === "STATUS_HALFTIME")
+      return { rank: 4, label: 'halftime', class: 'badge-live' };
+
+    if (apiStatus === "STATUS_IN_PROGRESS" ||
+        apiStatus === "STATUS_FIRST_HALF" ||
+        apiStatus === "STATUS_SECOND_HALF")
+      return { rank: 1, label: 'live', class: 'badge-live' };
+
+    if (apiStatus === "Match Finished" ||
+        apiStatus === "Final" ||
+        apiStatus === "Game Finished" ||
+        apiStatus === "F" ||
+        apiStatus === "FT" ||
+        apiStatus === "AOT" ||
+        apiStatus === "STATUS_FINAL" ||
+        apiStatus === "STATUS_FULL_TIME")
+      return { rank: 4, label: 'finished', class: 'badge-finished' };
+
+    if (apiStatus === "AOT")
+      return { rank: 4, label: 'finished_aot', class: 'badge-finished' };
+
+    if (apiStatus === "AP")
+      return { rank: 4, label: 'finished', class: 'badge-finished' };
+
+    if (apiStatus === "RET")
+      return { rank: 4, label: 'retired', class: 'badge-finished' };
+
+    if (apiStatus === "DEF")
+      return { rank: 4, label: 'defaulted', class: 'badge-finished' };
+
+    if (apiStatus === "STATUS_OVERTIME")
+      return { rank: 1, label: 'overtime', class: 'badge-live' };
+
+    if (apiStatus === "STATUS_SHOOTOUT")
+      return { rank: 1, label: 'shootout', class: 'badge-live' };
+
+    if (apiStatus === "STATUS_RAIN_DELAY")
+      return { rank: 1, label: 'delayed', class: 'badge-live' };
+
+    if (apiStatus === "Match Postponed" ||
+        apiStatus === "PST" ||
+        apiStatus === "POST" ||
+        apiStatus === "STATUS_POSTPONED" ||
+        apiStatus === "STATUS_RESCHEDULED")
+      return { rank: 3, label: 'postponed', class: 'badge-postponed' };
+
+    if (apiStatus === "Match Suspended" ||
+        apiStatus === "SUSP" ||
+        apiStatus === "S" ||
+        apiStatus === "STATUS_SUSPENDED")
+      return { rank: 3, label: 'suspended', class: 'badge-postponed' };
+
+    if (apiStatus === "STATUS_DELAYED")
+      return { rank: 3, label: 'delayed', class: 'badge-postponed' };
+
+    if (apiStatus === "Match Cancelled" ||
+        apiStatus === "CANC" ||
+        apiStatus === "STATUS_CANCELED")
+      return { rank: 3, label: 'cancelled', class: 'badge-postponed' };
+
+    if (apiStatus === "INTR")
+      return { rank: 3, label: 'interrupted', class: 'badge-postponed' };
+
+    if (apiStatus === "Match Abandoned" ||
+        apiStatus === "ABD" ||
+        apiStatus === "STATUS_ABANDONED" ||
+        apiStatus === "STATUS_FINAL_ABANDONED")
+      return { rank: 3, label: 'abandoned', class: 'badge-postponed' };
+
+    if (apiStatus === "AWD" ||
+        apiStatus === "AW" ||
+        apiStatus === "STATUS_FORFEIT")
+      return { rank: 3, label: 'awarded', class: 'badge-postponed' };
+
+    if (apiStatus === "WO")
+      return { rank: 3, label: 'walkover', class: 'badge-postponed' };
+
+    if (diffMin > 0 && ![
+      "STATUS_DELAYED",
+      "Match Postponed",
+      "PST",
+      "POST",
+      "STATUS_POSTPONED",
+      "Match Cancelled",
+      "CANC",
+      "STATUS_CANCELED",
+      "Match Suspended",
+      "STATUS_SUSPENDED",
+      "SUSP",
+      "S",
+      "Match Finished",
+      "F",
+      "FT",
+      "STATUS_FINAL",
+      "STATUS_FULL_TIME",
+      "ABD",
+      "STATUS_ABANDONED",
+      "INT",
+      "INTR",
+      "WO",
+      "AWD",
+      "AW",
+      "STATUS_FORFEIT"
+    ].includes(apiStatus))
+      return { rank: 1, label: 'live', class: 'badge-live' };
+  }
+
+  if (apiStatus === "Not Started" ||
+      apiStatus === "NS" ||
+      apiStatus === "STATUS_SCHEDULED")
+    return { rank: 2, label: 'upcoming', class: 'badge-upcoming' };
+
+  // Fallback so .label is never undefined
+  return { rank: 10, label: 'syncing', class: 'badge-syncing' };
 }
 
 // ────────────────────────────────────────────────
@@ -99,10 +374,39 @@ async function performBackgroundBatchFetch() {
   const config = SPORT_CONFIG[currentSport];
   if (!config || !config.dataStorage) return;
 
-  const standardChannels = channels.filter(c => c.apiURL || c.eventId);
+  let standardChannels = channels.filter(c => c.apiURL || c.eventId);
+  // Only fetch:
+  // 1. Live / in-progress matches
+  // 2. Finished matches that still don't have a final score
+  standardChannels = standardChannels.filter(ch => {
+    if (!ch.meta) return false;
+
+    const status = getStatus(ch.meta.status, ch.meta.timestamp, currentSport, timeDrift);
+    const label = status.label;
+
+    // Always keep truly live / in-progress states
+    if (['live', 'extra_time', 'halftime', 'penalties', 'delayed'].includes(label)) {
+      return true;
+    }
+
+    // For finished matches: keep fetching ONLY until both scores exist
+    if (['finished', 'finished_aet', 'finished_aot'].includes(label)) {
+      const hasFinalScore =
+        typeof ch.meta.homeScore === 'number' &&
+        typeof ch.meta.awayScore === 'number';
+
+      // Still missing the final score → keep requesting this match
+      return !hasFinalScore;
+    }
+
+    return false;
+  });
+
+
+
   if (standardChannels.length === 0) return;
 
-  const batchSize = 5;
+  const batchSize = 10;
   let allData = [];
 
   for (let i = 0; i < standardChannels.length; i += batchSize) {
