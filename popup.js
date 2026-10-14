@@ -7,9 +7,9 @@ let batchInterval;
 let timerInterval;
 let activeDate = null; // Tracks current active cache date string (YYYY-M-D)
 
-// ────────────────────────────────────────────────
+
 // UTILS & STATUS
-// ────────────────────────────────────────────────
+
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const getSafeDate = (utcString) => utcString ? new Date(utcString.endsWith('Z') ? utcString : utcString + 'Z') : null;
 const getCorrectedNow = () => new Date(Date.now() + timeDrift);
@@ -313,9 +313,9 @@ const SPORT_CONFIG = {
   }
 };
 
-// ────────────────────────────────────────────────
+
 // DATA FETCHING
-// ────────────────────────────────────────────────
+
 
 async function fetchSportData(sportId) {
   currentSport = sportId;
@@ -349,9 +349,9 @@ async function fetchSportData(sportId) {
     renderList();
   }
 
-  // 2. Fetch latest remote channels layout
-  let remoteChannels = [];
-  let remoteDate = null;
+  // 2. Fetch latest channels layout
+  let fChannels = [];
+  let fDate = null;
 
   if (config?.cache) {
     try {
@@ -359,34 +359,34 @@ async function fetchSportData(sportId) {
       if (resp.ok) {
         const data = await resp.json();
         if (Array.isArray(data) && data.length > 0) {
-          remoteChannels = data;
-          remoteDate = todayDate;
+          fChannels = data;
+          fDate = todayDate;
         }
       }
     } catch (e) {
-      console.warn(`Today's cache fetch failed for ${currentSport}.`);
+      // console.warn(`Today's cache fetch failed for ${currentSport}.`);
     }
 
-    if (!remoteChannels.length) {
+    if (!fChannels.length) {
       try {
         const resp = await fetch(`${config.cache}?date=${yesterdayDate}`);
         if (resp.ok) {
           const data = await resp.json();
           if (Array.isArray(data) && data.length > 0) {
-            remoteChannels = data;
-            remoteDate = yesterdayDate;
+            fChannels = data;
+            fDate = yesterdayDate;
           }
         }
       } catch (e) {
-        console.warn(`Yesterday's cache fetch failed for ${currentSport}.`);
+        // console.warn(`Yesterday's cache fetch failed for ${currentSport}.`);
       }
     }
   }
 
   // 3. Update active channels and consolidate with stored metadata
-  if (remoteChannels.length) {
-    channels = remoteChannels;
-    activeDate = remoteDate;
+  if (fChannels.length) {
+    channels = fChannels;
+    activeDate = fDate;
     await loadFromLocalCache(activeDate);
 
     const cacheKey = `channels_${currentSport}_${activeDate}`;
@@ -417,7 +417,7 @@ async function loadFromLocalCache(targetDate) {
       const cachedItem = cachedMap[ch.id];
       if (!cachedItem) return ch;
 
-      // FIX: Spread cachedItem.meta over ch.meta so updated score, status, video highlights are retained
+      // FIX: Spread cachedItem.meta over ch.meta so updated score and status are retained
       return {
         ...ch,
         meta: cachedItem.meta ? { ...ch.meta, ...cachedItem.meta } : ch.meta
@@ -437,7 +437,6 @@ async function performBatchFetch(isInitial = false) {
     standardChannels = standardChannels.filter(ch => {
       if (!ch.meta) return false;
       const label = getStatus(ch.meta.status, ch.meta.timestamp).label;
-      // return ["LIVE", "EXTRA TIME", "PENALTIES", "FINISHED"].includes(label);
       return ['live', 'extra_time', 'halftime', 'penalties', 'delayed', 'finished', 'finished_aet', 'finished_aot'].includes(label);
     });
   }
@@ -446,7 +445,6 @@ async function performBatchFetch(isInitial = false) {
   async function saveToLocal() {
     if (!activeDate) return;
     const cacheKey = `channels_${currentSport}_${activeDate}`;
-    // Use structured clone or JSON parse/stringify to break mutated memory references
     const cleanData = JSON.parse(JSON.stringify(channels));
     await chrome.storage.local.set({ [cacheKey]: cleanData });
   }
@@ -486,9 +484,8 @@ async function performBatchFetch(isInitial = false) {
 }
 
 
-// ────────────────────────────────────────────────
 // UI RENDERING
-// ────────────────────────────────────────────────
+
 function renderList() {
   const list = document.getElementById("channelList");
   const eventCountEl = document.getElementById("eventCount");
@@ -516,126 +513,218 @@ function renderList() {
     const meta = ch.meta || {};
     return `${meta.homeTeam||''} ${meta.awayTeam||''} ${meta.league||''} ${ch.title||''}`.toLowerCase().includes(searchVal);
   });
-  
+
   const categories = { live: [], upcoming: [], finished: [] };
-  
+
   filtered.forEach(ch => {
     const status = getStatus(ch.meta?.status, ch.meta?.timestamp);
     if (status.class === 'badge-live') categories.live.push(ch);
     else if (status.class === 'badge-finished') categories.finished.push(ch);
     else categories.upcoming.push(ch);
   });
-  
+
   categories.upcoming.sort((a, b) => getSafeDate(a.meta?.timestamp) - getSafeDate(b.meta?.timestamp));
   categories.finished.sort((a, b) => getSafeDate(b.meta?.timestamp) - getSafeDate(a.meta?.timestamp));
-  
-  const formatDate = (dateStr) => getSafeDate(dateStr)?.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) || "";
-  
-  [ { type: 'live', data: categories.live }, { type: 'upcoming', data: categories.upcoming }, { type: 'finished', data: categories.finished } ].forEach(group => {
+
+  const formatDate = (dateStr) =>
+    getSafeDate(dateStr)?.toLocaleDateString('en-GB', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric'
+    }) || "";
+
+  // HELPERS
+  function buildCenterUI(localTime, homeScore, awayScore, hasAwayTeam, id) {
+    const frag = document.createDocumentFragment();
+
+    if (localTime !== null) {
+      // upcoming / postponed / syncing
+      const timeDiv = document.createElement("div");
+      timeDiv.className = "start-time-text";
+      timeDiv.textContent = localTime;
+      frag.appendChild(timeDiv);
+
+      const timer = document.createElement("div");
+      timer.className = "countdown-mini";
+      timer.id = `timer-${id}`;
+      timer.textContent = "00:00:00";
+      frag.appendChild(timer);
+    } else {
+      // live / finished
+      const scoreDiv = document.createElement("div");
+      scoreDiv.className = "live-score-text";
+
+      if (homeScore !== undefined && homeScore !== null &&
+          awayScore !== undefined && awayScore !== null) {
+        scoreDiv.textContent = `${homeScore} - ${awayScore}`;
+      } else if (hasAwayTeam) {
+        scoreDiv.textContent = "vs";
+      }
+      frag.appendChild(scoreDiv);
+    }
+    return frag;
+  }
+
+  function buildTeamBox(name, badgeUrl, isSyncing) {
+    const box = document.createElement("div");
+    box.className = "team-box";
+
+    const logoFrame = document.createElement("div");
+    logoFrame.className = "logo-frame" + (isSyncing ? " skeleton sk-circle" : "");
+
+    if (!isSyncing && badgeUrl) {
+      const img = document.createElement("img");
+      img.className = "team-logo";
+      img.src = badgeUrl;
+      img.onerror = function () { this.style.display = "none"; };
+      logoFrame.appendChild(img);
+    }
+
+    const nameSpan = document.createElement("span");
+    nameSpan.className = "team-name";
+    if (isSyncing) {
+      const sk = document.createElement("span");
+      sk.className = "skeleton sk-text";
+      nameSpan.appendChild(sk);
+    } else {
+      nameSpan.textContent = name || "TBD";
+    }
+
+    box.append(logoFrame, nameSpan);
+    return box;
+  }
+
+  // RENDER GROUPS
+  [
+    { type: 'live',     data: categories.live },
+    { type: 'upcoming', data: categories.upcoming },
+    { type: 'finished', data: categories.finished }
+  ].forEach(group => {
     let lastDateHeader = "";
-    
+
     group.data.forEach(ch => {
       const meta = ch.meta || {};
       const status = getStatus(meta.status, meta.timestamp);
       const isSyncing = status.class === 'badge-syncing';
-      const localTime = getSafeDate(meta.timestamp)?.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', hour12:false}) || "--:--";
-      
+      const localTime = getSafeDate(meta.timestamp)?.toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+      }) || "--:--";
+
+      // Date header (only for upcoming & finished)
       if (group.type !== 'live') {
         const currentDateStr = formatDate(meta.timestamp);
         if (currentDateStr && currentDateStr !== lastDateHeader) {
           const h = document.createElement("div");
           h.className = "date-group-header";
-          h.innerText = currentDateStr;
+          h.textContent = currentDateStr;
           list.appendChild(h);
           lastDateHeader = currentDateStr;
         }
       }
 
-      let centerUI = "";
-      // if (status.label === "UPCOMING" || isSyncing || status.label === "POSTPONED" || status.label === "SUSPENDED" || status.label === "CANCELLED") {
-      if (status.class === 'badge-upcoming' || isSyncing || status.class === 'badge-postponed') {
-        centerUI = `<div class="start-time-text">${localTime}</div><div class="countdown-mini" id="timer-${ch.id}">00:00:00</div>`;
-      } else {
-        if (meta.homeScore !== undefined && meta.awayScore !== undefined && meta.homeScore !== null && meta.awayScore !== null) {
-          centerUI = `<div class="live-score-text">${meta.homeScore} - ${meta.awayScore}</div>`;
-        } else if (meta.awayTeam) {
-          centerUI = `<div class="live-score-text">vs</div>`;
-        }
-      }
+      const showTime = (status.class === 'badge-upcoming' ||
+                        isSyncing ||
+                        status.class === 'badge-postponed');
 
-      let innerContent = "";
-      if (!meta.awayTeam) {
-        const isStarted = (status.class === 'badge-live' || status.class === 'badge-finished');
-        innerContent = `
-          <div class="match-row" style="justify-content: flex-start; gap: 10px;">
-             <div style="flex: 2; font-weight: bold; font-size: 14px; white-space: normal; text-align: left;">
-                ${isSyncing ? '<span class="skeleton sk-text" style="width:100%"></span>' : (meta.homeTeam || ch.title || 'TBD')}
-             </div>
-             ${!isStarted ? `<div class="vs-capsule" style="min-width: 80px;">${centerUI}</div>` : ''}
-          </div>
-        `;
-      } else {
-        innerContent = `
-          <div class="match-row">
-            <div class="team-box">
-              <div class="logo-frame ${isSyncing?'skeleton sk-circle':''}">
-                <img class="team-logo" src="${meta.homeBadge||''}" style="${isSyncing?'display:none':''}" onerror="this.style.display='none'">
-              </div>
-              <span class="team-name">${isSyncing ? '<span class="skeleton sk-text"></span>' : (meta.homeTeam || 'TBD')}</span>
-            </div>
-            <div class="vs-capsule">${centerUI}</div>
-            <div class="team-box">
-              <div class="logo-frame ${isSyncing?'skeleton sk-circle':''}">
-                <img class="team-logo" src="${meta.awayBadge||''}" style="${isSyncing?'display:none':''}" onerror="this.style.display='none'">
-              </div>
-              <span class="team-name">${isSyncing ? '<span class="skeleton sk-text"></span>' : (meta.awayTeam || 'TBD')}</span>
-            </div>
-          </div>`;
-      }
-
-      const showLinks = (status.class === 'badge-finished' && meta.video);
-      const matchName = `${meta.homeTeam || ''} vs ${meta.awayTeam || ''}`.trim();
 
       let targetUrl = "";
       if (group.type === 'finished' && meta.video) {
         targetUrl = meta.video;
-      } else if (currentSport == "football") {
+      } else if (currentSport === "football") {
         targetUrl = "https://tinyurl.com/yzn79kut";
-      } else if (currentSport == "basketball") {
+      } else if (currentSport === "basketball") {
         targetUrl = "https://tinyurl.com/44cepna6";
-      } else if (currentSport == "baseball") {
+      } else if (currentSport === "baseball") {
         targetUrl = "https://tinyurl.com/45ezwfz8";
-      } else if (currentSport == "hockey") {
+      } else if (currentSport === "hockey") {
         targetUrl = "https://tinyurl.com/4rdfy6jm";
-      } else if (currentSport == "american_football") {
+      } else if (currentSport === "american_football") {
         targetUrl = "https://tinyurl.com/mws7ydkr";
-      } else if (currentSport == "more_sports") {
+      } else if (currentSport === "more_sports") {
         targetUrl = "https://tinyurl.com/4jmhw9bb";
       }
 
-      const card = document.createElement("div");
-      card.className = targetUrl ? "channel clickable-card" : "channel";
+      // Card
+      const eventCard = document.createElement("div");
+      eventCard.className = targetUrl ? "channel clickable-card" : "channel";
       if (targetUrl) {
-        card.setAttribute("data-url", targetUrl);
+        eventCard.setAttribute("data-url", targetUrl);
       }
 
-      card.innerHTML = `
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
-          <span style="font-size:10px; color:var(--text-muted); font-weight:bold;">${meta.league || ch.league || 'Unknown'}</span>
-          <span class="badge ${status.class}">${t(status.label)}</span>
-        </div>
-        
-        ${innerContent}
-        
-        ${showLinks ? `
-            <div class="links-container">
-              <button class="stream-link highlight-link" data-video="${meta.video}" data-title="${matchName} - Highlights">
-                "Highlights"
-              </button>
-            </div>
-          ` : ''}
-      `;
-      list.appendChild(card);
+      // Header
+      const header = document.createElement("div");
+      header.style.cssText = "display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;";
+
+      const leagueSpan = document.createElement("span");
+      leagueSpan.style.cssText = "font-size:10px; color:var(--text-muted); font-weight:bold;";
+      leagueSpan.textContent = meta.league || ch.league || "Unknown";
+
+      const badge = document.createElement("span");
+      badge.className = `badge ${status.class}`;
+      badge.textContent = t(status.label);
+
+      header.append(leagueSpan, badge);
+      eventCard.appendChild(header);
+
+      // Match content
+      const matchRow = document.createElement("div");
+
+      if (!meta.awayTeam) {
+        // Single-team / special event
+        matchRow.className = "match-row";
+        matchRow.style.cssText = "justify-content: flex-start; gap: 10px;";
+
+        const nameDiv = document.createElement("div");
+        nameDiv.style.cssText = "flex: 2; font-weight: bold; font-size: 14px; white-space: normal; text-align: left;";
+
+        if (isSyncing) {
+          const sk = document.createElement("span");
+          sk.className = "skeleton sk-text";
+          sk.style.width = "100%";
+          nameDiv.appendChild(sk);
+        } else {
+          nameDiv.textContent = meta.homeTeam || ch.title || "TBD";
+        }
+        matchRow.appendChild(nameDiv);
+
+        const isStarted = (status.class === 'badge-live' || status.class === 'badge-finished');
+        if (!isStarted) {
+          const vs = document.createElement("div");
+          vs.className = "vs-capsule";
+          vs.style.minWidth = "80px";
+          vs.appendChild(buildCenterUI(
+            showTime ? localTime : null,
+            meta.homeScore,
+            meta.awayScore,
+            false,
+            ch.id
+          ));
+          matchRow.appendChild(vs);
+        }
+      } else {
+        // Normal two-team match
+        matchRow.className = "match-row";
+
+        matchRow.appendChild(buildTeamBox(meta.homeTeam, meta.homeBadge, isSyncing));
+
+        const vs = document.createElement("div");
+        vs.className = "vs-capsule";
+        vs.appendChild(buildCenterUI(
+          showTime ? localTime : null,
+          meta.homeScore,
+          meta.awayScore,
+          true,
+          ch.id
+        ));
+        matchRow.appendChild(vs);
+
+        matchRow.appendChild(buildTeamBox(meta.awayTeam, meta.awayBadge, isSyncing));
+      }
+
+      eventCard.appendChild(matchRow);
+      list.appendChild(eventCard);
     });
   });
 }
@@ -656,9 +745,9 @@ function updateAllTimers() {
   });
 }
 
-// ────────────────────────────────────────────────
+
 // EVENT LISTENERS & STORAGE SYNC
-// ────────────────────────────────────────────────
+
 
 chrome.storage.onChanged.addListener((changes, namespace) => {
   if (namespace === 'local' && activeDate) {
@@ -702,9 +791,9 @@ document.getElementById('channelList').addEventListener('click', (e) => {
     return;
   }
 
-  const card = e.target.closest('.clickable-card');
-  if (card) {
-    const targetUrl = card.getAttribute('data-url');
+  const eventCard = e.target.closest('.clickable-card');
+  if (eventCard) {
+    const targetUrl = eventCard.getAttribute('data-url');
     chrome.tabs.create({ url: targetUrl });
   }
 });
