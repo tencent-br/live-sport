@@ -1,4 +1,5 @@
 // popup.js
+// v1.7.4 - unpin / pin to top icon added to event card
 
 let timeDrift = 0;
 let channels = [];
@@ -6,6 +7,9 @@ let currentSport = "football";
 let batchInterval;
 let timerInterval;
 let activeDate = null; // Tracks current active cache date string (YYYY-M-D)
+
+let pinnedMap = {};   
+const PINNED_STORAGE_KEY = "pinnedEventsBySport";
 
 
 // UTILS & STATUS
@@ -313,6 +317,43 @@ const SPORT_CONFIG = {
   }
 };
 
+// Load / save (pin to top) helpers
+
+async function loadPinned() {
+  const result = await chrome.storage.local.get(PINNED_STORAGE_KEY);
+  const raw = result[PINNED_STORAGE_KEY] || {};
+  pinnedMap = {};
+  for (const sport in raw) {
+    pinnedMap[sport] = new Set((raw[sport] || []).map(String));
+  }
+}
+
+async function savePinned() {
+  const toSave = {};
+  for (const sport in pinnedMap) {
+    toSave[sport] = Array.from(pinnedMap[sport]);
+  }
+  await chrome.storage.local.set({ [PINNED_STORAGE_KEY]: toSave });
+}
+
+function isPinned(id) {
+  return pinnedMap[currentSport]?.has(String(id)) === true;
+}
+
+function togglePin(id) {
+  const sport = currentSport;
+  if (!pinnedMap[sport]) pinnedMap[sport] = new Set();
+
+  const sid = String(id);
+  if (pinnedMap[sport].has(sid)) {
+    pinnedMap[sport].delete(sid);
+  } else {
+    pinnedMap[sport].add(sid);
+  }
+  savePinned();
+  renderList();
+}
+
 
 // DATA FETCHING
 
@@ -331,7 +372,7 @@ async function fetchSportData(sportId) {
   const todayDate = getFormattedDate(0);
   const yesterdayDate = getFormattedDate(-1);
 
-  // 1. Immediately load local storage first for fast tab-switching UI
+
   const todayKey = `channels_${currentSport}_${todayDate}`;
   const yesterdayKey = `channels_${currentSport}_${yesterdayDate}`;
   const localResult = await chrome.storage.local.get([todayKey, yesterdayKey]);
@@ -344,12 +385,12 @@ async function fetchSportData(sportId) {
     activeDate = yesterdayDate;
   }
 
-  // Render instantly if local cached data exists
+
   if (channels.length) {
     renderList();
   }
 
-  // 2. Fetch latest channels layout
+
   let fChannels = [];
   let fDate = null;
 
@@ -383,7 +424,7 @@ async function fetchSportData(sportId) {
     }
   }
 
-  // 3. Update active channels and consolidate with stored metadata
+
   if (fChannels.length) {
     channels = fChannels;
     activeDate = fDate;
@@ -417,7 +458,7 @@ async function loadFromLocalCache(targetDate) {
       const cachedItem = cachedMap[ch.id];
       if (!cachedItem) return ch;
 
-      // FIX: Spread cachedItem.meta over ch.meta so updated score and status are retained
+
       return {
         ...ch,
         meta: cachedItem.meta ? { ...ch.meta, ...cachedItem.meta } : ch.meta
@@ -523,8 +564,26 @@ function renderList() {
     else categories.upcoming.push(ch);
   });
 
-  categories.upcoming.sort((a, b) => getSafeDate(a.meta?.timestamp) - getSafeDate(b.meta?.timestamp));
-  categories.finished.sort((a, b) => getSafeDate(b.meta?.timestamp) - getSafeDate(a.meta?.timestamp));
+  // Helper: pinned items first, then original sort
+
+  function sortWithPinned(arr, isFinished = false) {
+    return arr.sort((a, b) => {
+      // Pinned always first – this must be the very first comparison
+      const aPinned = isPinned(a.id) ? 0 : 1;
+      const bPinned = isPinned(b.id) ? 0 : 1;
+      if (aPinned !== bPinned) return aPinned - bPinned;
+
+      // Then normal chronological order
+      const dateA = getSafeDate(a.meta?.timestamp) || 0;
+      const dateB = getSafeDate(b.meta?.timestamp) || 0;
+
+      return isFinished ? dateB - dateA : dateA - dateB;
+    });
+  }
+
+  sortWithPinned(categories.live);
+  sortWithPinned(categories.upcoming);
+  sortWithPinned(categories.finished, true);
 
   const formatDate = (dateStr) =>
     getSafeDate(dateStr)?.toLocaleDateString('en-GB', {
@@ -646,7 +705,7 @@ function renderList() {
         targetUrl = "https://tinyurl.com/4jmhw9bb";
       }
 
-      // Card
+
       const eventCard = document.createElement("div");
       eventCard.className = targetUrl ? "channel clickable-card" : "channel";
       if (targetUrl) {
@@ -661,18 +720,33 @@ function renderList() {
       leagueSpan.style.cssText = "font-size:10px; color:var(--text-muted); font-weight:bold;";
       leagueSpan.textContent = meta.league || ch.league || "Unknown";
 
+      // Right side: badge + pin
+      const rightSide = document.createElement("div");
+      rightSide.style.cssText = "display:flex; align-items:center; gap:2px;";
+
       const badge = document.createElement("span");
       badge.className = `badge ${status.class}`;
       badge.textContent = t(status.label);
 
-      header.append(leagueSpan, badge);
+      const pinBtn = document.createElement("button");
+      pinBtn.className = "pin-btn" + (isPinned(ch.id) ? " pinned" : "");
+      // pinBtn.title = isPinned(ch.id) ? "Unpin" : "Pin to top";
+      pinBtn.title = isPinned(ch.id) ? t('unpin') : t('pin_to_top');
+      pinBtn.innerHTML = isPinned(ch.id) ? "★" : "☆";
+      pinBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        togglePin(ch.id);
+      });
+
+      rightSide.append(badge, pinBtn);
+      header.append(leagueSpan, rightSide);
       eventCard.appendChild(header);
 
-      // Match content
+
       const matchRow = document.createElement("div");
 
       if (!meta.awayTeam) {
-        // Single-team / special event
+
         matchRow.className = "match-row";
         matchRow.style.cssText = "justify-content: flex-start; gap: 10px;";
 
@@ -704,7 +778,7 @@ function renderList() {
           matchRow.appendChild(vs);
         }
       } else {
-        // Normal two-team match
+
         matchRow.className = "match-row";
 
         matchRow.appendChild(buildTeamBox(meta.homeTeam, meta.homeBadge, isSyncing));
@@ -808,6 +882,8 @@ window.addEventListener('load', async () => {
   } else {
     document.getElementById('themeBtn').innerHTML = "🌙";
   }
+
+  await loadPinned();
 
   const initialSport = settings.currentSport || "football";
   
