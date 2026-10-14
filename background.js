@@ -27,9 +27,9 @@ const SPORT_CONFIG = {
   }
 };
 
-// ────────────────────────────────────────────────
+
 // UTILS
-// ────────────────────────────────────────────────
+
 function getFormattedDate(offsetDays = 0) {
   const d = new Date();
   if (offsetDays !== 0) {
@@ -38,9 +38,9 @@ function getFormattedDate(offsetDays = 0) {
   return `${d.getUTCFullYear()}-${d.getUTCMonth() + 1}-${d.getUTCDate()}`;
 }
 
-// ────────────────────────────────────────────────
+
 // UTILS (needed for live-match filtering)
-// ────────────────────────────────────────────────
+
 const getSafeDate = (utcString) => utcString ? new Date(utcString.endsWith('Z') ? utcString : utcString + 'Z') : null;
 
 function getCorrectedNow(timeDrift = 0) {
@@ -313,9 +313,9 @@ function getStatus(apiStatus, timestamp, currentSport = "football", timeDrift = 
   return { rank: 10, label: 'syncing', class: 'badge-syncing' };
 }
 
-// ────────────────────────────────────────────────
+
 // INITIALIZATION & ALARMS
-// ────────────────────────────────────────────────
+
 chrome.sidePanel
   .setPanelBehavior({ openPanelOnActionClick: true })
   .catch((error) => console.error("Error setting side panel behavior:", error));
@@ -330,9 +330,9 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
   }
 });
 
-// ────────────────────────────────────────────────
+
 // BACKGROUND DATA FETCHING
-// ────────────────────────────────────────────────
+
 
 async function performBackgroundBatchFetch() {
   let currentSport = "football";
@@ -348,7 +348,7 @@ async function performBackgroundBatchFetch() {
     const todayDate = getFormattedDate(0);
     const yesterdayDate = getFormattedDate(-1);
 
-    // 1. Check for today's cache key first
+
     const todayKey = `channels_${currentSport}_${todayDate}`;
     const todayData = await chrome.storage.local.get([todayKey]);
 
@@ -356,7 +356,7 @@ async function performBackgroundBatchFetch() {
       channelsKey = todayKey;
       channels = todayData[todayKey];
     } else {
-      // 2. Fall back to yesterday's cache key if today's is not present/populated
+
       const yesterdayKey = `channels_${currentSport}_${yesterdayDate}`;
       const yesterdayData = await chrome.storage.local.get([yesterdayKey]);
 
@@ -375,27 +375,23 @@ async function performBackgroundBatchFetch() {
   if (!config || !config.dataStorage) return;
 
   let standardChannels = channels.filter(c => c.apiURL || c.eventId);
-  // Only fetch:
-  // 1. Live / in-progress matches
-  // 2. Finished matches that still don't have a final score
+
   standardChannels = standardChannels.filter(ch => {
     if (!ch.meta) return false;
 
     const status = getStatus(ch.meta.status, ch.meta.timestamp, currentSport, timeDrift);
     const label = status.label;
 
-    // Always keep truly live / in-progress states
+
     if (['live', 'extra_time', 'halftime', 'penalties', 'delayed'].includes(label)) {
       return true;
     }
 
-    // For finished matches: keep fetching ONLY until both scores exist
     if (['finished', 'finished_aet', 'finished_aot'].includes(label)) {
       const hasFinalScore =
         typeof ch.meta.homeScore === 'number' &&
         typeof ch.meta.awayScore === 'number';
 
-      // Still missing the final score → keep requesting this match
       return !hasFinalScore;
     }
 
