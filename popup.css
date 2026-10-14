@@ -232,3 +232,31 @@ body.dark-mode .stream-link {
   body.dark-mode .adblock-notice a {
     color: #fff !important;
   }
+
+  /* PIN TO TOP */
+.pin-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 2px 4px;
+  margin-left: 6px;
+  opacity: 0.55;
+  transition: opacity 0.15s, transform 0.15s;
+  line-height: 1;
+  color: var(--text-muted);
+}
+
+.pin-btn:hover {
+  opacity: 1;
+  transform: scale(1.15);
+}
+
+.pin-btn.pinned {
+  opacity: 1;
+  color: #f59e0b;          /* amber / gold */
+}
+
+.channel {
+  position: relative;       /* needed if you want absolute positioning later */
+}
