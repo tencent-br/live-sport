@@ -51,6 +51,9 @@ const translations = {
     adblock_notice: "For the best viewing experience, using an <a href='https://adguard.com/en/adguard-browser-extension/overview.html' target='_blank'>ad-blocker</a> is recommended.",
     search_placeholder: "Search team, league, tournament or competition",
     highlights: "Highlights",
+    pin_to_top: "Pin to top",
+    unpin: "Unpin",
+
     match_count: {
       one: "{count} {sport} Match",
       other: "{count} {sport} Matches"
@@ -96,6 +99,8 @@ zh: {
     adblock_notice: "为了获得最佳观看体验，建议使用<a href='https://adguard.com/en/adguard-browser-extension/overview.html' target='_blank'>广告拦截器</a>。",
     search_placeholder: "搜索球队、联赛、锦标赛或赛事",
     highlights: "精彩集锦",
+    pin_to_top: "置顶",
+    unpin: "取消置顶",
     match_count: {
       other: "{count} 场{sport}比赛 - 点击观看"
     },
@@ -139,6 +144,8 @@ ar: {
     adblock_notice: "للحصول على أفضل تجربة مشاهدة، يُنصح باستخدام <a href='https://adguard.com/en/adguard-browser-extension/overview.html' target='_blank'>مانع الإعلانات</a>.",
     search_placeholder: "ابحث عن فريق أو دوري أو بطولة أو مسابقة",
     highlights: "أبرز اللقطات",
+    pin_to_top: "تثبيت في الأعلى",
+    unpin: "إلغاء التثبيت",
 
     match_count: {
       zero: "لا توجد مباريات {sport} - انقر للمشاهدة",
@@ -193,6 +200,8 @@ hi: {
     adblock_notice: "बेहतरीन देखने के अनुभव के लिए <a href='https://adguard.com/en/adguard-browser-extension/overview.html' target='_blank'>ऐड-ब्लॉकर</a> का उपयोग करने की सलाह दी जाती है।",
     search_placeholder: "टीम, लीग, टूर्नामेंट या प्रतियोगिता खोजें",
     highlights: "हाइलाइट्स",
+    pin_to_top: "शीर्ष पर पिन करें",
+    unpin: "पिन हटाएँ",
 
     match_count: {
       one: "{count} {sport} मैच - देखने के लिए क्लिक करें",
@@ -239,6 +248,8 @@ bn: {
     adblock_notice: "সেরা দেখার অভিজ্ঞতার জন্য একটি <a href='https://adguard.com/en/adguard-browser-extension/overview.html' target='_blank'>অ্যাড-ব্লকার</a> ব্যবহার করার পরামর্শ দেওয়া হচ্ছে।",
     search_placeholder: "দল, লিগ, টুর্নামেন্ট বা প্রতিযোগিতা খুঁজুন",
     highlights: "হাইলাইটস",
+    pin_to_top: "উপরে পিন করুন",
+    unpin: "আনপিন করুন",
 
     match_count: {
       one: "{count}টি {sport} ম্যাচ - দেখতে ক্লিক করুন",
@@ -285,6 +296,8 @@ id: {
     adblock_notice: "Untuk pengalaman menonton terbaik, disarankan menggunakan <a href='https://adguard.com/en/adguard-browser-extension/overview.html' target='_blank'>pemblokir iklan</a>.",
     search_placeholder: "Cari tim, liga, turnamen, atau kompetisi",
     highlights: "Sorotan",
+    pin_to_top: "Sematkan di atas",
+    unpin: "Lepas sematan",
 
     match_count: {
       one: "{count} Pertandingan {sport} - Klik untuk Menonton",
@@ -331,6 +344,8 @@ it: {
     adblock_notice: "Per una migliore esperienza di visione, si consiglia di utilizzare un <a href='https://adguard.com/en/adguard-browser-extension/overview.html' target='_blank'>blocco pubblicità</a>.",
     search_placeholder: "Cerca squadra, campionato, torneo o competizione",
     highlights: "Highlights",
+    pin_to_top: "Fissa in alto",
+    unpin: "Rimuovi pin",
 
     match_count: {
       one: "{count} partita di {sport} - Clicca per guardare",
@@ -377,6 +392,8 @@ ja: {
     adblock_notice: "快適に視聴するには、<a href='https://adguard.com/en/adguard-browser-extension/overview.html' target='_blank'>広告ブロッカー</a>の使用をおすすめします。",
     search_placeholder: "チーム、リーグ、トーナメント、または大会を検索",
     highlights: "ハイライト",
+    pin_to_top: "上部に固定",
+    unpin: "固定を解除",
 
     match_count: {
       other: "{count}件の{sport}の試合 - クリックして視聴"
@@ -421,6 +438,8 @@ ko: {
     adblock_notice: "최상의 시청 환경을 위해 <a href='https://adguard.com/en/adguard-browser-extension/overview.html' target='_blank'>광고 차단기</a> 사용을 권장합니다.",
     search_placeholder: "팀, 리그, 토너먼트 또는 대회 검색",
     highlights: "하이라이트",
+    pin_to_top: "맨 위에 고정",
+    unpin: "고정 해제",
 
     match_count: {
       other: "{count}개의 {sport} 경기 - 클릭하여 시청"
@@ -465,6 +484,8 @@ ru: {
     adblock_notice: "Для лучшего просмотра рекомендуется использовать <a href='https://adguard.com/en/adguard-browser-extension/overview.html' target='_blank'>блокировщик рекламы</a>.",
     search_placeholder: "Поиск команды, лиги, турнира или соревнования",
     highlights: "Лучшие моменты",
+    pin_to_top: "Закрепить вверху",
+    unpin: "Открепить",
 
     match_count: {
       one: "{count} матч по виду спорта «{sport}» — Нажмите, чтобы смотреть",
@@ -515,6 +536,8 @@ fr: {
     adblock_notice: "Pour une meilleure expérience de visionnage, il est recommandé d'utiliser un <a href='https://adguard.com/en/adguard-browser-extension/overview.html' target='_blank'>bloqueur de publicités</a>.",
     search_placeholder: "Rechercher une équipe, une ligue, un tournoi ou une compétition",
     highlights: "Temps forts",
+    pin_to_top: "Épingler en haut",
+    unpin: "Désépingler",
 
     match_count: {
       one: "{count} match de {sport} - Cliquez pour regarder",
@@ -562,6 +585,8 @@ es: {
     adblock_notice: "Para disfrutar de la mejor experiencia de visualización, se recomienda utilizar un <a href='https://adguard.com/en/adguard-browser-extension/overview.html' target='_blank'>bloqueador de anuncios</a>.",
     search_placeholder: "Buscar equipo, liga, torneo o competición",
     highlights: "Momentos destacados",
+    pin_to_top: "Fijar arriba",
+    unpin: "Desfijar",
 
     match_count: {
       one: "{count} partido de {sport} - Haz clic para ver",
@@ -608,6 +633,8 @@ pt: {
     adblock_notice: "Para ter a melhor experiência de visualização, recomendamos usar um <a href='https://adguard.com/en/adguard-browser-extension/overview.html' target='_blank'>bloqueador de anúncios</a>.",
     search_placeholder: "Pesquisar time, liga, torneio ou competição",
     highlights: "Melhores Momentos",
+    pin_to_top: "Fixar no topo",
+    unpin: "Desafixar",
 
     match_count: {
       one: "{count} partida de {sport} - Clique para assistir",
@@ -654,6 +681,8 @@ de: {
     adblock_notice: "Für das beste Fernseherlebnis wird die Verwendung eines <a href='https://adguard.com/en/adguard-browser-extension/overview.html' target='_blank'>Werbeblockers</a> empfohlen.",
     search_placeholder: "Team, Liga, Turnier oder Wettbewerb suchen",
     highlights: "Highlights",
+    pin_to_top: "Oben anheften",
+    unpin: "Anheftung lösen",
 
     match_count: {
       one: "{count} {sport}-Spiel - Zum Ansehen klicken",
@@ -700,6 +729,8 @@ tr: {
     adblock_notice: "En iyi izleme deneyimi için bir <a href='https://adguard.com/en/adguard-browser-extension/overview.html' target='_blank'>reklam engelleyici</a> kullanmanız önerilir.",
     search_placeholder: "Takım, lig, turnuva veya müsabaka ara",
     highlights: "Öne Çıkanlar",
+    pin_to_top: "En üste sabitle",
+    unpin: "Sabitlemeyi kaldır",
 
     match_count: {
       one: "{count} {sport} Maçı - İzlemek için tıklayın",
@@ -746,6 +777,8 @@ vi: {
     adblock_notice: "Để có trải nghiệm xem tốt nhất, bạn nên sử dụng <a href='https://adguard.com/en/adguard-browser-extension/overview.html' target='_blank'>trình chặn quảng cáo</a>.",
     search_placeholder: "Tìm kiếm đội, giải đấu, giải vô địch hoặc cuộc thi",
     highlights: "Điểm nổi bật",
+    pin_to_top: "Ghim lên đầu",
+    unpin: "Bỏ ghim",
 
     match_count: {
       one: "{count} trận {sport} - Nhấp để xem",
