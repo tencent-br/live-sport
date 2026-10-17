@@ -1,5 +1,6 @@
 // popup.js
 // v1.7.4 - unpin / pin to top icon added to event card
+// FIX: pin-to-top is now scoped by sport AND active date (no cross-day bleed)
 
 let timeDrift = 0;
 let channels = [];
@@ -317,6 +318,7 @@ const SPORT_CONFIG = {
   }
 };
 
+
 // Load / save (pin to top) helpers
 
 async function loadPinned() {
@@ -324,31 +326,48 @@ async function loadPinned() {
   const raw = result[PINNED_STORAGE_KEY] || {};
   pinnedMap = {};
   for (const sport in raw) {
-    pinnedMap[sport] = new Set((raw[sport] || []).map(String));
+    const sportData = raw[sport];
+    if (Array.isArray(sportData)) {
+      pinnedMap[sport] = {};
+      continue;
+    }
+    pinnedMap[sport] = {};
+    if (sportData && typeof sportData === "object") {
+      for (const date in sportData) {
+        pinnedMap[sport][date] = new Set((sportData[date] || []).map(String));
+      }
+    }
   }
 }
 
 async function savePinned() {
   const toSave = {};
   for (const sport in pinnedMap) {
-    toSave[sport] = Array.from(pinnedMap[sport]);
+    toSave[sport] = {};
+    for (const date in pinnedMap[sport]) {
+      const ids = Array.from(pinnedMap[sport][date] || []);
+      if (ids.length) toSave[sport][date] = ids;
+    }
   }
   await chrome.storage.local.set({ [PINNED_STORAGE_KEY]: toSave });
 }
 
 function isPinned(id) {
-  return pinnedMap[currentSport]?.has(String(id)) === true;
+  if (!activeDate) return false;
+  return pinnedMap[currentSport]?.[activeDate]?.has(String(id)) === true;
 }
 
 function togglePin(id) {
+  if (!activeDate) return;
   const sport = currentSport;
-  if (!pinnedMap[sport]) pinnedMap[sport] = new Set();
+  if (!pinnedMap[sport]) pinnedMap[sport] = {};
+  if (!pinnedMap[sport][activeDate]) pinnedMap[sport][activeDate] = new Set();
 
   const sid = String(id);
-  if (pinnedMap[sport].has(sid)) {
-    pinnedMap[sport].delete(sid);
+  if (pinnedMap[sport][activeDate].has(sid)) {
+    pinnedMap[sport][activeDate].delete(sid);
   } else {
-    pinnedMap[sport].add(sid);
+    pinnedMap[sport][activeDate].add(sid);
   }
   savePinned();
   renderList();
