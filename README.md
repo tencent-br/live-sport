@@ -1,8 +1,8 @@
 # Live Sports
 
-Watch live sports with ease. **Live Sports** aggregates links to live match streams from major competitions worldwide, making it easier to find available streams without constantly switching between websites or apps.
+Watch live sports and video highlights with ease. **Live Sports** aggregates links to live match streams and video highlights from major competitions worldwide, making it easier to find available streams and videos without constantly switching between websites or apps.
 
-> ⚠️ **Recommended:** Use a reputable [ad blocker](https://adguard.com) for a smoother browsing and streaming experience. External streaming websites may contain intrusive advertisements or pop-ups.
+> ⚠️ **Recommended:** Use a reputable [ad blocker](https://adguard.com) for a smoother live sports streaming experience. External streaming websites may contain intrusive advertisements or pop-ups.
 
 ## ✨ Features
 
@@ -10,16 +10,17 @@ Watch live sports with ease. **Live Sports** aggregates links to live match stre
 - **⚡ Real-Time Match Center:** Follow live scores, match statuses, upcoming fixtures, schedules, and results.
 - **🔎 Advanced Search:** Quickly find your favorite teams, leagues, and competitions.
 - **🌍 Global Sports Coverage:** Explore major professional, collegiate, domestic, and international sports competitions.
-- **🔗 Stream Aggregation:** Find available match streams in one convenient interface.
+- **🔗 Live Stream and Video Highlights Aggregation:** Find available live streams and video highlights (for completed matches) in one convenient interface.
 
 ---
 
 ## 🚀 Installation & Usage
 
-This repository provides two versions of the project:
+This repository provides three versions of the project:
 
 - **Chrome Extension** — Run Live Sports directly in Google Chrome.
 - **Android App (APK)** — Install Live Sports on a compatible Android device.
+- **Web App** - Visit the website (no installation required)
 
 Choose your preferred platform below to get started.
 
