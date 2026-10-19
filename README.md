@@ -6,7 +6,7 @@ Watch live sports and video highlights with ease. Live Sports apps (Android and 
 
 ## ✨ Features
 
-- **📺 Multiview:** Watch up to **6 streams simultaneously** on a single screen. Ideal for following multiple matches on busy matchdays.
+- **📺 Multiview (Android & Web):** Watch up to **6 streams simultaneously** on a single screen. Ideal for following multiple matches on busy matchdays.
 - **⚡ Real-Time Match Center:** Follow live scores, match statuses, upcoming fixtures, schedules, and results.
 - **🔗 Live Sport Streams and Video Highlights Aggregation:** Watch live sports and highlights of completed matches in one convenient interface.
 - **🌍 Global Sports Coverage:** Explore major professional, collegiate, domestic, and international sports competitions.
