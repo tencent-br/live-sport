@@ -1,6 +1,6 @@
 # Live Sports
 
-Watch live sports and video highlights with ease. **Live Sports** aggregates links to live match streams and video highlights from major competitions worldwide, making it easier to find available streams and videos without constantly switching between websites or apps.
+Watch live sports and video highlights with ease. Live Sports app and browser extension aggregate links to live match streams and video highlights from major competitions worldwide, making it easier to watch live sports streams and video highlights without constantly switching between websites or apps.
 
 > ⚠️ **Recommended:** Use a reputable [ad blocker](https://adguard.com) for a smoother live sports streaming experience. External streaming websites may contain intrusive advertisements or pop-ups.
 
