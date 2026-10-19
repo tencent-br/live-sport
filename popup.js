@@ -1,6 +1,6 @@
 // popup.js
-// v1.7.4 - unpin / pin to top icon added to event card
-// FIX: pin-to-top is now scoped by sport AND active date (no cross-day bleed)
+// v1.7.5 - unpin / pin to top icon added to event card 
+// this version also fetches video highlights
 
 let timeDrift = 0;
 let channels = [];
@@ -477,10 +477,14 @@ async function loadFromLocalCache(targetDate) {
       const cachedItem = cachedMap[ch.id];
       if (!cachedItem) return ch;
 
-
       return {
         ...ch,
-        meta: cachedItem.meta ? { ...ch.meta, ...cachedItem.meta } : ch.meta
+        meta: {
+          ...(ch.meta || {}),
+          ...(cachedItem.meta || {}),
+          // Prefer whichever side has a video URL
+          video: cachedItem.meta?.video || ch.meta?.video || undefined
+        }
       };
     });
   }
@@ -533,7 +537,14 @@ async function performBatchFetch(isInitial = false) {
 
     allData.forEach(matchData => {
       const channel = channels.find(c => String(c.eventId) === String(matchData.id));
-      if (channel) channel.meta = matchData;
+      if (!channel) return;
+
+      const existingVideo = channel.meta?.video;
+
+      channel.meta = {
+        ...matchData,
+        ...(existingVideo ? { video: existingVideo } : {})
+      };
     });
     
     await saveToLocal();
@@ -817,6 +828,20 @@ function renderList() {
       }
 
       eventCard.appendChild(matchRow);
+
+      if (status.class === 'badge-finished' && meta.video) {
+        const links = document.createElement("div");
+        links.className = "links-container";
+
+        const btn = document.createElement("button");
+        btn.className = "stream-link highlight-link";
+        btn.setAttribute("data-video", meta.video);
+        btn.textContent = (typeof t === "function" ? t("highlights") : null) || "Highlights";
+
+        links.appendChild(btn);
+        eventCard.appendChild(links);
+      }
+
       list.appendChild(eventCard);
     });
   });
