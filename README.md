@@ -18,8 +18,8 @@ Watch live sports and video highlights with ease. Live Sports apps (Android and 
 
 This repository provides three versions of the project:
 
-- **Chrome Extension** — Run Live Sports directly in Google Chrome.
-- **Android App (APK)** — Install Live Sports on a compatible Android device.
+- **Chrome Extension** — Run directly in Google Chrome.
+- **Android App (APK)** — Install on a compatible Android device.
 - **Web App** - Visit the website (no installation required)
 
 Choose your preferred platform below to get started.
@@ -48,7 +48,7 @@ The Chrome extension can be installed manually from the source code using Chrome
    - Click **Load unpacked**.
    - Select the extracted project folder that directly contains the `manifest.json` file.
 
-5. **Open Live Sports**
+5. **Open the extenson**
 
    Once installed, the extension should appear on the Chrome Extensions page.
 
@@ -58,7 +58,6 @@ The Chrome extension can be installed manually from the source code using Chrome
 2. Pin Live Sports to your toolbar for convenient access.
 3. Click the Live Sports icon to open the extension.
 4. Browse available matches, search for competitions, and open streams.
-5. Use **Multiview** to watch up to six streams at the same time.
 
 ---
 
@@ -82,7 +81,7 @@ The Android version is distributed as an APK file through the repository's GitHu
 
    Open your Downloads folder, tap the downloaded APK, and follow the on-screen installation instructions.
 
-4. **Launch Live Sports**
+4. **Launch the app**
 
    After installation, find the app in your app drawer and tap its icon to open it.
 
@@ -91,4 +90,5 @@ The Android version is distributed as an APK file through the repository's GitHu
 1. Launch Live Sports from your Android device.
 2. Browse available matches and competitions.
 3. Search for your favorite teams or leagues.
-4. Select an available stream to start watching.
+4. Select an available stream or highlights to start watching.
+5. Select multiview option to watch up to 6 streams on one screen. Use Landscape for multiview on mobile phones.
