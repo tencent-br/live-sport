@@ -1,4 +1,4 @@
-# Live Sports & Video Highlights
+# Live Sports & Highlights
 
 Discover and enjoy live sports streams and video highlights with ease. Live Sports apps (Android and Web) and browser extension aggregate links to live match streams and highlights of completed matches across major sports competitions worldwide. The goal is to make it easier to discover and watch sports streams and highlights without constantly switching between websites or apps.
 
