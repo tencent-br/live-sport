@@ -1,6 +1,6 @@
 # Live Sports
 
-Watch live sports and video highlights with ease. Live Sports app and browser extension aggregate links to live match streams and video highlights from major competitions worldwide, making it easier to watch live sports streams and video highlights without constantly switching between websites or apps.
+Watch live sports and video highlights with ease. Live Sports app and browser extension aggregate links to live match streams and video highlights (for completed matches) from major competitions worldwide, making it easier to watch live sports streams and video highlights without constantly switching between websites or apps.
 
 > ⚠️ **Recommended:** Use a reputable [ad blocker](https://adguard.com) for a smoother live sports streaming experience. External streaming websites may contain intrusive advertisements or pop-ups.
 
@@ -8,9 +8,9 @@ Watch live sports and video highlights with ease. Live Sports app and browser ex
 
 - **📺 Multiview:** Watch up to **6 streams simultaneously** on a single screen. Ideal for following multiple matches on busy matchdays.
 - **⚡ Real-Time Match Center:** Follow live scores, match statuses, upcoming fixtures, schedules, and results.
-- **🔎 Advanced Search:** Quickly find your favorite teams, leagues, and competitions.
+- **🔗 Live Stream and Video Highlights Aggregation:** Watch live sports and video highlights (for completed matches) in one convenient interface.
 - **🌍 Global Sports Coverage:** Explore major professional, collegiate, domestic, and international sports competitions.
-- **🔗 Live Stream and Video Highlights Aggregation:** Find available live streams and video highlights (for completed matches) in one convenient interface.
+- **🔎 Advanced Search:** Quickly find your favorite teams, leagues, and competitions.
 
 ---
 
