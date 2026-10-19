@@ -92,9 +92,3 @@ The Android version is distributed as an APK file through the repository's GitHu
 2. Browse available matches and competitions.
 3. Search for your favorite teams or leagues.
 4. Select an available stream to start watching.
-
----
-
-## 🌍 Global Sports Coverage
-
-Live Sports brings together links to streams across major sports competitions worldwide, including professional leagues, international tournaments, domestic competitions, and collegiate sports.
