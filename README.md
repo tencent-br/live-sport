@@ -20,7 +20,7 @@ This repository provides three versions of the project:
 
 - **Chrome Extension** — Run directly in Google Chrome.
 - **Android App (APK)** — Install on a compatible Android device.
-- **Web App** - Visit the website (no installation required)
+- **Web App** - Visit the [website](https://oshofreetv.com/) (no installation required)
 
 Choose your preferred platform below to get started.
 
