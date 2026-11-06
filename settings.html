@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Settings</title>
+  <link rel="stylesheet" href="settings.css" />
+</head>
+<body>
+
+  <!-- League Preferences Heading -->
+  <h1 data-i18n="league_competition_preferences">
+    League & Competition Preferences
+  </h1>
+
+  <p class="sub" data-i18n="league_competition_description">
+    Choose which leagues and competitions appear in the side panel.
+    Leave empty to show all.
+  </p>
+
+  <!-- Playback Preferences -->
+  <section class="settings-section">
+
+    <div class="settings-section-header">
+      <div>
+        <h2 data-i18n="playback_preferences">
+          Playback Preferences
+        </h2>
+
+        <p class="section-description"
+           data-i18n="playback_preferences_desc">
+          Customize how highlight videos open in your browser.
+        </p>
+      </div>
+    </div>
+
+    <div class="setting-option">
+
+      <div class="setting-info">
+        <div class="setting-title">
+          <span data-i18n="reuse_youtube_tab">
+            Reuse YouTube tab
+          </span>
+
+          <span class="setting-status" id="tabReuseStatus" data-i18n="checking">
+            Checking...
+          </span>
+        </div>
+
+        <p class="setting-description"
+           data-i18n="reuse_youtube_tab_enabled_desc">
+          When enabled, the extension reuses an existing YouTube tab to open highlights instead of opening a new tab each time.
+        </p>
+      </div>
+
+      <label class="toggle-switch">
+        <input type="checkbox" id="enableTabReuseToggle">
+        <span class="toggle-slider"></span>
+      </label>
+
+    </div>
+
+    <p class="permission-note" id="tabReuseNote"
+       data-i18n="tabs_permission_required">
+      Enabling this option requires Chrome's tabs permission.
+    </p>
+
+  </section>
+
+  <!-- League Selection Toolbar -->
+  <div class="toolbar">
+
+    <label>
+      <span data-i18n="sport">Sport</span>
+
+      <select id="sportSelect">
+        <option value="football" data-i18n="football">Football</option>
+        <option value="basketball" data-i18n="basketball">Basketball</option>
+        <option value="baseball" data-i18n="baseball">Baseball</option>
+        <option value="hockey" data-i18n="hockey">Hockey</option>
+        <option value="american_football" data-i18n="american_football">
+          American Football
+        </option>
+      </select>
+    </label>
+
+    <button type="button" id="selectAll" data-i18n="select_all">
+      Select all
+    </button>
+
+    <button type="button" id="clearAll" data-i18n="clear">
+      Clear
+    </button>
+
+    <button type="button" class="primary" id="saveBtn"
+            data-i18n="save">
+      Save
+    </button>
+
+    <span class="status" id="saveStatus"></span>
+
+  </div>
+
+  <!-- Competition Catalogue -->
+  <div id="catalogRoot"></div>
+
+  <script src="translation.js"></script>
+  <script src="settings.js"></script>
+
+</body>
+</html>
